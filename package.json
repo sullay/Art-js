@@ -1,0 +1,21 @@
+{
+  "name": "art",
+  "version": "0.1.0",
+  "description": "一个基于虚拟dom的高性能前端框架",
+  "main": "index.js",
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sullay/Art-js.git"
+  },
+  "keywords": [
+    "art"
+  ],
+  "author": "sullay",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sullay/Art-js/issues"
+  },
+  "homepage": "https://github.com/sullay/Art-js#readme"
+}
