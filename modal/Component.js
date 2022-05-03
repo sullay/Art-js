@@ -30,7 +30,6 @@ function setDataFuc(data = {}, callbackList, priority) {
   pushTask({
     key: this.$vNode,
     val: () => {
-      // 自定义组件node的$dom指向子节点的$dom，此处赋值为null是为了触发createDom
       for (const key in data) {
         this.data[key] = data[key];
       }
