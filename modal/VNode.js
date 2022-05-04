@@ -124,17 +124,32 @@ export class vComponentNode extends vNode {
         preNodes = preNodes.concat(preNodes.splice(0, preNodes.length - newNodes.length))
       }
       // 所有旧node
-      let preMap = new Map();
+      const preMap = new Map();
       for (const node of preNodes) {
+        if (node.$props.key) {
+          preMap.set(node.$props.key, node);
+          continue;
+        }
         if (!preMap.has(node.$type)) preMap.set(node.$type, []);
         if (node.$dom) preMap.get(node.$type).push(node);
       }
       //  指向同层级上一个节点
       let beforeNode = null;
       for (const node of newNodes) {
-        if (preMap.has(node.$type) && preMap.get(node.$type).length) {
+        let preNode = null
+        if (preMap.has(node.$props.key)) {
+          const tempNode = preMap.get(node.$props.key);
+          if (tempNode && tempNode.$type === node.$type) {
+            preNode = tempNode;
+            preMap.delete(node.$props.key);
+          }
+        }
+        if (!preNode && preMap.has(node.$type) && preMap.get(node.$type).length) {
+          const tempNodeList = preMap.get(node.$type)
+          if (tempNodeList.length) preNode = tempNodeList.shift()
+        }
+        if (preNode) {
           node.$parentNode = parentNode;
-          let preNode = preMap.get(node.$type).shift();
           if (node.$isComponent) {
             // 自定义组件，复用旧的组件实例
             node.$instance = preNode.$instance;
@@ -155,6 +170,9 @@ export class vComponentNode extends vNode {
             vNode.updateDom(node, preNode);
             queue.push([node.$children, preNode.$children, node]);
           }
+          if (beforeNode && beforeNode.$dom != node.$dom) {
+            beforeNode.$dom.after(node.$dom);
+          }
         } else {
           // 没有复用的普通节点更新
           let dom = node.getDom();
@@ -162,8 +180,6 @@ export class vComponentNode extends vNode {
             beforeNode.$dom.after(dom);
           } else if (parentNode.$dom.firstChild) {
             parentNode.$dom.firstChild.before(dom);
-          } else {
-            parentNode.$dom.appendChild(dom);
           }
           renderDomTree(node, parentNode);
         }
@@ -172,8 +188,11 @@ export class vComponentNode extends vNode {
       // 自定义组件设置dom
       if (parentNode.$isComponent && !parentNode.$dom) parentNode.$dom = newNodes[0].getDom();
       preMap.forEach(list => {
-        if (!list.length) return;
-        list.forEach(node => node.$dom && node.$dom.remove())
+        if (Array.isArray(list)) {
+          list.forEach(node => node.$dom && node.$dom.remove());
+        } else if (list.$dom) {
+          list.$dom.remove();
+        }
       })
     }
   }
