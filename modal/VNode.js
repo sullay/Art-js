@@ -111,11 +111,11 @@ export class vComponentNode extends vNode {
   }
 
   static diffDom(_newNodes = [], _preNodes = [], _parentNode) {
-    let stack = [
+    let queue = [
       [_newNodes, _preNodes, _parentNode]
     ];
-    while (stack.length) {
-      let [newNodes, preNodes, parentNode, parentNodeBefore] = stack.pop();
+    while (queue.length) {
+      let [newNodes, preNodes, parentNode] = queue.shift();
       if (!newNodes.length) {
         preNodes.forEach(node => node.$dom && node.$dom.remove());
         continue;
@@ -149,28 +149,17 @@ export class vComponentNode extends vNode {
               // 更新自定义组件虚拟dom树
               let child = node.$instance.render();
               node.$children = [child];
-              stack.push([node.$children, preNode.$children, node, beforeNode]);
+              vComponentNode.diffDom(node.$children, preNode.$children, node);
             }
           } else {
             vNode.updateDom(node, preNode);
-            stack.push([node.$children, preNode.$children, node]);
+            queue.push([node.$children, preNode.$children, node]);
           }
-        } else if (parentNode.$isComponent) {
-          // 没有复用的自定义组件节点更新
-          let dom = parentNode.getDom();
-          if (parentNodeBefore) {
-            parentNodeBefore.getDom().after(dom);
-          } else if (parentNode.$parentNode.$dom.firstChild) {
-            parentNode.$parentNode.$dom.firstChild.before(dom);
-          } else {
-            parentNode.$parentNode.$dom.appendChild(dom);
-          }
-          renderDomTree(parentNode, parentNode.$parentNode);
         } else {
           // 没有复用的普通节点更新
           let dom = node.getDom();
           if (beforeNode) {
-            beforeNode.getDom().after(dom);
+            beforeNode.$dom.after(dom);
           } else if (parentNode.$dom.firstChild) {
             parentNode.$dom.firstChild.before(dom);
           } else {
