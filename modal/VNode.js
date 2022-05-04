@@ -159,7 +159,7 @@ export class vComponentNode extends vNode {
           // 没有复用的自定义组件节点更新
           let dom = parentNode.getDom();
           if (parentNodeBefore) {
-            parentNodeBefore.$dom.after(dom);
+            parentNodeBefore.getDom().after(dom);
           } else if (parentNode.$parentNode.$dom.firstChild) {
             parentNode.$parentNode.$dom.firstChild.before(dom);
           } else {
@@ -170,7 +170,7 @@ export class vComponentNode extends vNode {
           // 没有复用的普通节点更新
           let dom = node.getDom();
           if (beforeNode) {
-            beforeNode.$dom.after(dom);
+            beforeNode.getDom().after(dom);
           } else if (parentNode.$dom.firstChild) {
             parentNode.$dom.firstChild.before(dom);
           } else {
