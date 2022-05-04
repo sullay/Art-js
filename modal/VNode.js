@@ -120,12 +120,11 @@ export class vComponentNode extends vNode {
         preNodes.forEach(node => node.$dom && node.$dom.remove());
         continue;
       }
-      if (newNodes.length < preNodes.length) {
-        preNodes = preNodes.concat(preNodes.splice(0, preNodes.length - newNodes.length))
-      }
       // 所有旧node
       const preMap = new Map();
-      for (const node of preNodes) {
+      for (let i = 0; i < preNodes.length; i++) {
+        let node = preNodes[i];
+        node.beforeNodeIndex = i - 1;
         if (node.$props.key) {
           preMap.set(node.$props.key, node);
           continue;
@@ -170,7 +169,7 @@ export class vComponentNode extends vNode {
             vNode.updateDom(node, preNode);
             queue.push([node.$children, preNode.$children, node]);
           }
-          if (beforeNode && beforeNode.$dom != node.$dom) {
+          if (beforeNode && beforeNode.$dom !== preNodes[preNode.beforeNodeIndex].$dom) {
             beforeNode.$dom.after(node.$dom);
           }
         } else {
