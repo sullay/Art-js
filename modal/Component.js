@@ -10,8 +10,9 @@ export class Component {
   constructor({
     props = {}
   }) {
-    this.data = {}
+    this.data = {};
     this.props = props;
+    if (!this.constructor.$cacheMap) this.constructor.$cacheMap = {};
   }
 
   // 更新响应式数据
@@ -22,7 +23,7 @@ export class Component {
     setDataFuc.call(this, data, callbackList, PRIORITY_TYPES.IMMEDIATE_PRIORITY_TIMEOUT)
   }
   forceUpdate() {
-    setDataFuc.call(this)
+    setDataFuc.call(this, {}, [], PRIORITY_TYPES.IMMEDIATE_PRIORITY_TIMEOUT)
   }
 }
 

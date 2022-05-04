@@ -14,7 +14,7 @@ export function renderDomTree(node, parentNode) {
   node.$parentNode = parentNode;
   let parentDom = parentNode.getDom();
   let dom = node.getDom();
-  if(!dom.parentNode) parentDom.appendChild(dom);
+  if (!dom.parentNode) parentDom.appendChild(dom);
   // 判断是否为自定义组件
   if (node.$isComponent) {
     node.$children[0].$parentNode = node;
@@ -44,7 +44,13 @@ export function h(type, props, ..._children) {
     }
   }
   if (type.prototype instanceof Component) {
-    return new vComponentNode(type, props, children);
+    let cacheNode = props && props.key && type.$cacheMap && type.$cacheMap[props.key];
+    if (cacheNode && cacheNode.$instance && (!cacheNode.$instance.shouldComponentUpdate || !cacheNode.$instance.shouldComponentUpdate(props))) {
+      return cacheNode;
+    }
+    let node = new vComponentNode(type, props, children);
+    if (props && props.key) type.$cacheMap[props.key] = node;
+    return node;
   } else {
     return new vNode(type, props, children);
   }

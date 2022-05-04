@@ -91,6 +91,8 @@ export class vComponentNode extends vNode {
     super(type, allProps);
     // 标识自定义组件
     this.$isComponent = true;
+    this.$type = 'vComponent_' + this.$type.name;
+    this.$typeClass = type;
     // 创建组件实例
     this.$instance = new type({
       props: this.$props
@@ -117,48 +119,48 @@ export class vComponentNode extends vNode {
     while (queue.length) {
       let [newNodes, preNodes, parentNode] = queue.shift();
       if (!newNodes.length) {
-        preNodes.forEach(node => node.$dom && node.$dom.remove());
+        preNodes.forEach(node => {
+          node.$dom && node.$dom.remove();
+          if (node.$isComponent && node.$props.key && node.$typeClass.$cacheMap) node.$typeClass.$cacheMap[node.$props.key] = undefined;
+        });
         continue;
       }
       // 所有旧node
-      const preMap = new Map();
+      const preMap = {}
       for (let i = 0; i < preNodes.length; i++) {
         let node = preNodes[i];
         node.beforeNodeIndex = i - 1;
         if (node.$props.key) {
-          preMap.set(node.$props.key, node);
+          preMap[node.$props.key] = node;
           continue;
         }
-        if (!preMap.has(node.$type)) preMap.set(node.$type, []);
-        if (node.$dom) preMap.get(node.$type).push(node);
+        if (!preMap[node.$type]) preMap[node.$type] = [];
+        if (node.$dom) preMap[node.$type].push(node);
       }
       //  指向同层级上一个节点
       let beforeNode = null;
       for (const node of newNodes) {
         let preNode = null
-        if (preMap.has(node.$props.key)) {
-          const tempNode = preMap.get(node.$props.key);
+        if (preMap[node.$props.key]) {
+          const tempNode = preMap[node.$props.key];
           if (tempNode && tempNode.$type === node.$type) {
             preNode = tempNode;
-            preMap.delete(node.$props.key);
+            preMap[node.$props.key] = null;
           }
         }
-        if (!preNode && preMap.has(node.$type) && preMap.get(node.$type).length) {
-          const tempNodeList = preMap.get(node.$type)
+        if (!preNode && preMap[node.$type] && preMap[node.$type].length) {
+          const tempNodeList = preMap[node.$type]
           if (tempNodeList.length) preNode = tempNodeList.shift()
         }
         if (preNode) {
           node.$parentNode = parentNode;
           if (node.$isComponent) {
-            // 自定义组件，复用旧的组件实例
-            node.$instance = preNode.$instance;
-            // 组件实例$vNode指向新的node
-            node.$instance.$vNode = node;
-            if (!node.$instance.shouldComponentUpdate || !node.$instance.shouldComponentUpdate(node.$props)) {
-              node.$children = preNode.$children;
-              node.$dom = preNode.$dom;
-              node.$children[0].$parentNode = node;
-            } else {
+            if (node !== preNode) {
+              // 自定义组件，复用旧的组件实例
+              node.$instance = preNode.$instance;
+              // 组件实例$vNode指向新的node
+              node.$instance.$vNode = node;
+
               node.$instance.props = node.$props;
               // 更新自定义组件虚拟dom树
               let child = node.$instance.render();
@@ -186,11 +188,13 @@ export class vComponentNode extends vNode {
       }
       // 自定义组件设置dom
       if (parentNode.$isComponent && !parentNode.$dom) parentNode.$dom = newNodes[0].getDom();
-      preMap.forEach(list => {
+      Object.values(preMap).forEach(list => {
+        if (!list) return;
         if (Array.isArray(list)) {
           list.forEach(node => node.$dom && node.$dom.remove());
         } else if (list.$dom) {
           list.$dom.remove();
+          if (list.$isComponent && list.$props.key && list.$typeClass.$cacheMap) list.$typeClass.$cacheMap[list.$props.key] = undefined;
         }
       })
     }
