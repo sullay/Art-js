@@ -119,10 +119,12 @@ export class vComponentNode extends vNode {
     while (queue.length) {
       let [newNodes, preNodes, parentNode] = queue.shift();
       if (!newNodes.length) {
-        preNodes.forEach(node => {
-          node.$dom && node.$dom.remove();
-          if (node.$isComponent && node.$props.key && node.$typeClass.$cacheMap) node.$typeClass.$cacheMap[node.$props.key] = undefined;
-        });
+        if (preNodes.length) {
+          parentNode.$dom.textContent = "";
+          preNodes.forEach(node => {
+            if (node.$isComponent && node.$props.key && node.$typeClass.$cacheMap) node.$typeClass.$cacheMap[node.$props.key] = undefined;
+          });
+        }
         continue;
       }
       // 所有旧node
