@@ -29,6 +29,6 @@ export function pushTask(task) {
   // 如果任务调度未启动，启动调度，并在下一帧raf阶段执行。
   if (!isWorking) {
     isWorking = true;
-    requestAnimationFrame(workLoop)
-  };
+    requestAnimationFrame(workLoop);
+  }
 }
