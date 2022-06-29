@@ -9,7 +9,7 @@ import {
 import $root from '../modal/Root'
 // 渲染domTree
 export function renderDomTree(node, parentNode) {
-  if (!vNode.isVNode(node)) throw new Error("渲染元素类型有误");
+  if (!vNode.isVNode(node)) throw new Error("渲染节点类型有误");
   // 设置父节点
   node.$parentNode = parentNode;
   let parentDom = parentNode.getDom();
@@ -31,8 +31,9 @@ export function render(node, parentDom) {
   renderDomTree(node, $root);
 }
 
-// 创建元素
+// 创建虚拟dom节点
 export function h(type, props, ..._children) {
+  // 处理子节点
   let children = [];
   for (let child of _children) {
     if (Array.isArray(child)) {
@@ -43,12 +44,20 @@ export function h(type, props, ..._children) {
       children.push(new vTextNode(child))
     }
   }
+  // 自定义组件类型虚拟dom
   if (type.prototype instanceof Component) {
-    let cacheNode = props && props.key && type.$cacheMap && type.$cacheMap[props.key];
-    if (cacheNode && cacheNode.$instance && (!cacheNode.$instance.shouldComponentUpdate || !cacheNode.$instance.shouldComponentUpdate(props))) {
+    // 记忆虚拟树中读取缓存
+    let cacheNode = props && props.key &&
+      type.$cacheMap && type.$cacheMap[props.key];
+    // 节点没有更新时，直接返回缓存
+    if (cacheNode && cacheNode.$instance &&
+      (!cacheNode.$instance.shouldComponentUpdate ||
+        !cacheNode.$instance.shouldComponentUpdate(props))) {
       return cacheNode;
     }
-    let node = new vComponentNode(type, props, children);
+    // 没有缓存或者缓存有更新时创建创新的虚拟dom节点
+    let node = new vComponentNode(type, props);
+    // 如果新生成的节点存在key值，则写入缓存
     if (props && props.key) type.$cacheMap[props.key] = node;
     return node;
   } else {

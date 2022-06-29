@@ -5,7 +5,7 @@ import {
 import {
   renderDomTree
 } from '../src/render'
-// 普通元素
+// 普通节点
 export class vNode {
   constructor(type = '', allProps = {}, children = []) {
     this.$type = type;
@@ -19,10 +19,10 @@ export class vNode {
         this.$props[prop] = allProps[prop];
       }
     }
-    // 处理子元素中的文字类元素
+    // 处理子节点中的文字类节点
     this.$children = children;
   }
-  // 判断是否属于虚拟Dom元素
+  // 判断是否属于虚拟Dom节点
   static isVNode(node) {
     return node instanceof this;
   }
@@ -71,7 +71,7 @@ export class vNode {
   }
 }
 
-// 文字元素
+// 文字节点
 export class vTextNode extends vNode {
   constructor(text) {
     super(vTextNode.type, {
@@ -131,11 +131,14 @@ export class vComponentNode extends vNode {
       const preMap = {}
       for (let i = 0; i < preNodes.length; i++) {
         let node = preNodes[i];
+        // 记录旧虚拟树中的前后关系
         node.beforeNodeIndex = i - 1;
+        // 根据key值缓存
         if (node.$props.key) {
           preMap[node.$props.key] = node;
           continue;
         }
+        // 根据类型缓存
         if (!preMap[node.$type]) preMap[node.$type] = [];
         if (node.$dom) preMap[node.$type].push(node);
       }
