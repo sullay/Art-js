@@ -6,11 +6,11 @@ settings:
 
 dependencies:
   web-scheduler:
-    specifier: ^1.0.1
-    version: 1.0.1
+    specifier: ^1.1.0
+    version: 1.1.0
 
 packages:
 
-  /web-scheduler@1.0.1:
-    resolution: {integrity: sha512-2ecnPAhJCCBGaQNS5SHP8rfjnhTW/oG95wKAnZ2bYZG6GgpsnzBczncND/NOBbbWZSHdhjPdB6OMdag0c8IL/A==}
+  /web-scheduler@1.1.0:
+    resolution: {integrity: sha512-72UzkwabcSpSSL1NaGMf9h3wLE2mvY6qqxPAPO40kPx88Klltn5IPeHP1kUiH9ymunawug6rDt8XWnFwVyrTHg==}
     dev: false
