@@ -1,9 +1,4 @@
-import {
-  pushTask
-} from '../src/scheduler'
-import {
-  PRIORITY_TYPES
-} from './Scheduler'
+import { animationFrameScheduler, PRIORITY_TYPE } from 'web-scheduler'
 
 // 自定义组件类
 export class Component {
@@ -16,27 +11,26 @@ export class Component {
   }
 
   // 更新响应式数据
-  setData(data, ...callbackList) {
-    setDataFuc.call(this, data, callbackList)
+  setData(data, callback) {
+    setDataFuc.call(this, data, callback)
   }
-  setDataNow(data, ...callbackList) {
-    setDataFuc.call(this, data, callbackList, PRIORITY_TYPES.IMMEDIATE_PRIORITY_TIMEOUT)
+  setDataNow(data, callback) {
+    setDataFuc.call(this, data, callback, PRIORITY_TYPE.IMMEDIATE)
   }
   forceUpdate() {
-    setDataFuc.call(this, {}, [], PRIORITY_TYPES.IMMEDIATE_PRIORITY_TIMEOUT)
+    setDataFuc.call(this, {}, undefined, PRIORITY_TYPE.IMMEDIATE)
   }
 }
 
-function setDataFuc(data = {}, callbackList, priority) {
-  pushTask({
+function setDataFuc(data = {}, callback, priority) {
+  animationFrameScheduler.pushTask(() => {
+    for (const key in data) {
+      this.data[key] = data[key];
+    }
+    this.$vNode.updateComponent();
+  },{
     key: this.$vNode,
-    val: () => {
-      for (const key in data) {
-        this.data[key] = data[key];
-      }
-      this.$vNode.updateComponent();
-    },
-    callbackList,
+    callback,
     priority
-  });
+  })
 }

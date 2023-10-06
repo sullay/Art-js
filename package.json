@@ -1,10 +1,9 @@
 {
   "name": "js-art",
-  "version": "0.1.8",
+  "version": "0.2.0",
   "description": "一个基于虚拟dom的高性能前端框架",
   "main": "index.js",
-  "scripts": {
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sullay/Art-js.git"
@@ -17,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/sullay/Art-js/issues"
   },
-  "homepage": "https://github.com/sullay/Art-js#readme"
+  "homepage": "https://github.com/sullay/Art-js#readme",
+  "dependencies": {
+    "web-scheduler": "^0.1.2"
+  }
 }
