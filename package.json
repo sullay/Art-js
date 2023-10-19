@@ -18,6 +18,6 @@
   },
   "homepage": "https://github.com/sullay/Art-js#readme",
   "dependencies": {
-    "web-scheduler": "^1.4.0"
+    "web-scheduler": "^1.5.0"
   }
 }

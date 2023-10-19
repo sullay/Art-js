@@ -1,16 +1,16 @@
 lockfileVersion: '6.0'
 
 settings:
-  autoInstallPeers: true
+  autoInstallPeers: false
   excludeLinksFromLockfile: false
 
 dependencies:
   web-scheduler:
-    specifier: ^1.4.0
-    version: 1.4.0
+    specifier: ^1.5.0
+    version: 1.5.0
 
 packages:
 
-  /web-scheduler@1.4.0:
-    resolution: {integrity: sha512-SBeLZlUkO/DnJdtAtUaAYfxHrSR4WlyxAeMfqtUsU8uxml2nDRTaZj3A2uXoVoYym7BjnDGdQYXfH2h7Mlr3Og==}
+  /web-scheduler@1.5.0:
+    resolution: {integrity: sha512-k3N3/nGq6JTCsf8K24awthAyv6G3NA10FNY5p0XDTBdgI5fBkV5PlBVF4rCeaDbHYurDVvq3ib+GAAaMVJfRVg==}
     dev: false

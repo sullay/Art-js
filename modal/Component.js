@@ -1,4 +1,4 @@
-import { animationFrameScheduler, PRIORITY_TYPE } from 'web-scheduler'
+import { immediateScheduler, PRIORITY_TYPE } from 'web-scheduler'
 
 // 自定义组件类
 export class Component {
@@ -23,7 +23,7 @@ export class Component {
 }
 
 function setDataFuc(data = {}, callback, priority) {
-  animationFrameScheduler.pushTask(() => {
+  immediateScheduler.pushTask(() => {
     for (const key in data) {
       this.data[key] = data[key];
     }
